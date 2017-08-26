@@ -1,0 +1,53 @@
+{
+"variables": {
+	"skip_export": "false"
+},
+    "provisioners": [],
+    "builders": [
+	{
+	    "type": "virtualbox-iso",
+      "ssh_skip_nat_mapping": true,
+      "ssh_host": "127.0.0.1",
+      "ssh_port": 2222,
+	    "disk_size": "30000",
+	    "guest_os_type": "Oracle_64",
+	    "hard_drive_interface": "sata",
+	    "boot_command": [
+					"<wait10>",
+					"<tab><wait5> text<wait> noverifyssl <wait>",
+					"ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/buildTimeConfig.cfg<enter><wait>"
+	    ],
+	    "vboxmanage": [
+	   		[ "modifyvm", "{{.Name}}", "--memory", "4096" ],
+	   		[ "modifyvm", "{{.Name}}", "--cpus", "2" ],
+			  [ "modifyvm", "{{.Name}}", "--clipboard", "bidirectional"],
+			  [ "modifyvm", "{{.Name}}", "--draganddrop", "bidirectional"],
+			  [ "modifyvm", "{{.Name}}", "--paravirtprovider", "kvm"],
+			  [ "modifyvm", "{{.Name}}", "--natpf1", "ssh,tcp,,2222,,22"],
+			  [ "modifyvm", "{{.Name}}", "--audio", "none"],
+			  [ "modifyvm", "{{.Name}}", "--vram", "128"]
+   		],
+   	  "vboxmanage_post": [
+   			[ "modifyvm", "{{.Name}}", "--memory", "2048" ],
+   		  [ "modifyvm", "{{.Name}}", "--cpus", "1" ]
+  	   ],
+	    "guest_additions_mode": "upload",
+	    "iso_url": "OracleLinux-R7-U3-Server-x86_64-dvd.iso",
+	    "iso_checksum_type": "md5",
+	    "iso_checksum": "e44eff40f3a16ffa008285e5c52e1199",
+	    "format": "ova",
+	    "boot_wait": "10s",
+	    "ssh_username": "oracle",
+	    "ssh_password": "oracle",
+	    "ssh_wait_timeout": "2400s",
+	    "output_directory": "output",
+	    "shutdown_command": "echo 'oracle' | sudo -S shutdown -P now",
+	    "post_shutdown_delay": "30s",
+	    "keep_registered": "{{user `skip_export`}}",
+	    "skip_export": "{{user `skip_export`}}",
+		  "shutdown_timeout": "10m",
+		  "vm_name": "OL7U3",
+		  "http_directory":"ks"
+	}
+    ]
+}
